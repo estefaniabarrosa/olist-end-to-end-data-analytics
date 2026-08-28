@@ -36,7 +36,7 @@ This project uses two public datasets published by Olist, a Brazilian marketplac
 `closed_deals.seller_id` is the bridge between the Marketing Funnel and the E-Commerce data. This connection was checked in Notebook 1 (section 12):
 
 - Of the 842 sellers acquired through Marketing, only **380** are found selling in the E-Commerce data. The other 462 are not assumed to be a data error — this is treated as a finding to explore during EDA, not a bug to fix.
-- Because of this, any analysis that mixes acquisition data with marketplace performance (business questions 1 and 4) only covers those 380 sellers, not all 842.
+- Because of this, any analysis that mixes acquisition data with marketplace performance (business question 1) only covers those 380 sellers, not all 842.
 
 ## Scale used in this project vs. the full dataset
 

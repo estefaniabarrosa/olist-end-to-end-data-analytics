@@ -17,17 +17,18 @@ Metrics are grouped into three dimensions, kept separate on purpose: a seller ca
 
 | Metric | What it means | How it's calculated | Status |
 |---|---|---|---|
-| **Average delivery time** | On average, how many days it takes an order to reach the customer. | Delivery date − purchase date. | Not done yet |
-| **Late delivery rate** | Share of orders that arrived later than Olist told the customer to expect. | Number of late orders / number of delivered orders. "Late" means delivered after `order_estimated_delivery_date`. | Not done yet |
-| **Delivery time variability** | How consistent a seller's delivery times are, not just how fast. | Standard deviation of delivery days per seller. | Not done yet |
+| **Average delivery time** | On average, how many days it takes an order to reach the customer. | Delivery date − purchase date. | Done — computed in Notebook 2 (section 3), reproduced in SQL in Notebook 3 |
+| **Late delivery rate** | Share of orders that arrived later than Olist told the customer to expect. | Number of late orders / number of delivered orders. "Late" means delivered after `order_estimated_delivery_date`. | Done — computed in Notebook 2 (section 3), reproduced in SQL in Notebook 3 |
+| **Delivery time variability** | How consistent a seller's delivery times are, not just how fast. | Standard deviation of delivery days per seller. | Not done yet — not required by any of the four research questions; kept here as a possible future metric |
 
 ## Customer satisfaction
 
 | Metric | What it means | How it's calculated | Status |
 |---|---|---|---|
-| **Average review score** | On average, how customers rated orders from a seller. | Mean of `review_score` (1 to 5). | Not done yet |
+| **Average review score** | On average, how customers rated orders from a seller. | Mean of `review_score` (1 to 5). | Done — computed in Notebook 2 (section 4), reproduced in SQL in Notebook 3 |
 
 ## Notes
 
 - These definitions live in code inside `notebooks/02_eda_business_analysis.ipynb`, in the "Business metrics dictionary" markdown cell. This file is a standalone copy so it can be linked from the README without opening a notebook.
 - "Status" reflects what is actually built in the notebook right now, not what is planned. This file will be updated as the analytical dataset grows.
+- "Observed active period" and "Delivery time variability" remain optional stretch metrics — they were defined during scoping but were not needed to answer Q1–Q3, so they were not prioritized over the core analysis.
