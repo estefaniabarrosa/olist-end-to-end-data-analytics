@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delivery, not acquisition — Olist marketplace analysis · Estefania Barrosa</title>
+<meta name="description" content="An end-to-end analysis of 99,441 Olist marketplace orders. Acquisition channel doesn't predict seller performance. Delivery timing dominates customer satisfaction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101940;
+    --ink-soft:#2B3766;
+    --paper:#ECEFF5;
+    --paper-2:#F7F8FB;
+    --late:#E8503F;
+    --ontime:#4E7FE8;
+    --muted:#6E7899;
+    --rule:#C9CFE0;
+    --display:"Bricolage Grotesque",system-ui,sans-serif;
+    --body:"Public Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --wrap:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-size:17px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--late);outline-offset:3px}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 14px
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{border-bottom:1px solid var(--rule)}
+  .masthead .wrap{
+    display:flex;gap:20px;align-items:baseline;justify-content:space-between;
+    padding-top:20px;padding-bottom:20px;flex-wrap:wrap
+  }
+  .who{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em}
+  .who b{font-weight:500}
+  .navlinks{display:flex;gap:20px;font-family:var(--mono);font-size:12.5px}
+  .navlinks a{text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px}
+  .navlinks a:hover{border-color:var(--late);color:var(--late)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:74px 0 8px}
+  .hero h1{
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(2.3rem,5.6vw,4.15rem);line-height:1.02;
+    letter-spacing:-.03em;margin:0 0 26px;max-width:17ch
+  }
+  .hero h1 em{font-style:normal;color:var(--late)}
+  .lede{font-size:clamp(1.02rem,1.7vw,1.2rem);max-width:56ch;color:var(--ink-soft);margin:0}
+
+  /* ---------- signature: dot matrix ---------- */
+  .matrix{
+    margin:56px 0 0;display:grid;gap:30px;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    border-top:1px solid var(--rule);padding-top:34px
+  }
+  .panel-label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);margin:0 0 4px}
+  .panel-num{font-family:var(--display);font-weight:800;font-size:2.9rem;line-height:1;letter-spacing:-.03em;margin:0 0 3px}
+  .panel-num.hot{color:var(--late)}
+  .panel-cap{font-size:14px;color:var(--muted);margin:0 0 18px;max-width:30ch}
+  .dots{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;max-width:300px}
+  .dots i{
+    display:block;aspect-ratio:1;background:var(--rule);border-radius:1px;
+    transform:scale(.2);opacity:0
+  }
+  .dots i.on{background:var(--late)}
+  .lit .dots i{animation:pop .34s cubic-bezier(.2,1.4,.4,1) forwards}
+  @keyframes pop{to{transform:scale(1);opacity:1}}
+  .verdict{
+    grid-column:1/-1;border-top:1px solid var(--rule);margin-top:8px;padding-top:20px;
+    font-family:var(--display);font-weight:600;font-size:clamp(1.1rem,2.3vw,1.55rem);
+    letter-spacing:-.015em;line-height:1.32;max-width:44ch
+  }
+  .verdict b{color:var(--late);font-weight:800}
+
+  /* ---------- generic section ---------- */
+  section{padding:86px 0}
+  .rule-top{border-top:1px solid var(--rule)}
+  h2{
+    font-family:var(--display);font-weight:800;letter-spacing:-.025em;
+    font-size:clamp(1.6rem,3.2vw,2.5rem);line-height:1.1;margin:0 0 20px;max-width:20ch
+  }
+  .body-col{max-width:60ch}
+  .body-col p{margin:0 0 16px}
+  .body-col p:last-child{margin-bottom:0}
+
+  /* ---------- levers ---------- */
+  .levers{display:grid;gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:36px}
+  @media(min-width:760px){.levers{grid-template-columns:repeat(3,1fr)}}
+  .lever{background:var(--paper-2);padding:26px 24px}
+  .lever h3{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:500}
+  .lever p{margin:0;font-size:15.5px;line-height:1.55}
+  .lever .tested{
+    display:inline-block;margin-top:16px;font-family:var(--mono);font-size:11.5px;
+    letter-spacing:.05em;padding:3px 9px;border:1px solid currentColor;border-radius:100px
+  }
+  .tested.no{color:var(--muted)}
+  .tested.yes{color:var(--late)}
+
+  /* ---------- states chart ---------- */
+  .toggle{display:flex;gap:0;margin:34px 0 8px;border:1px solid var(--ink);width:fit-content;max-width:100%;flex-wrap:wrap}
+  .toggle button{
+    font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+    padding:11px 18px;background:transparent;color:var(--ink);
+    border:0;cursor:pointer;transition:background .18s,color .18s
+  }
+  .toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper-2)}
+  .chart{margin-top:26px;display:grid;gap:9px}
+  .row{display:grid;grid-template-columns:38px 1fr 82px;gap:12px;align-items:center}
+  .row .st{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .row .track{background:#DDE1EC;height:26px;position:relative;overflow:hidden}
+  .row .bar{
+    display:block;height:100%;width:0;background:var(--ontime);
+    transition:width .55s cubic-bezier(.3,.9,.3,1),background .3s
+  }
+  .row.hot .bar{background:var(--late)}
+  .row .val{font-family:var(--mono);font-size:13px;text-align:right}
+  .row.hot .val{color:var(--late)}
+  .chart-note{font-size:14.5px;color:var(--muted);margin:20px 0 0;max-width:56ch}
+
+  /* ---------- null result ---------- */
+  .nullbox{
+    margin-top:32px;border:1px solid var(--rule);background:var(--paper-2);
+    padding:30px 26px
+  }
+  .nullstats{display:flex;flex-wrap:wrap;gap:28px 44px;margin:0 0 18px}
+  .nullstat .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .nullstat .v{font-family:var(--display);font-weight:800;font-size:1.7rem;letter-spacing:-.02em;line-height:1.2}
+  .nullbox p{margin:0;font-size:15.5px;max-width:62ch}
+
+  /* ---------- recs ---------- */
+  ol.recs{list-style:none;counter-reset:r;padding:0;margin:34px 0 0}
+  ol.recs li{
+    counter-increment:r;border-top:1px solid var(--rule);padding:22px 0;
+    display:grid;grid-template-columns:34px 1fr;gap:16px
+  }
+  ol.recs li:last-child{border-bottom:1px solid var(--rule)}
+  ol.recs li::before{
+    content:counter(r,decimal-leading-zero);font-family:var(--mono);
+    font-size:12px;color:var(--muted);padding-top:5px
+  }
+  ol.recs h3{font-family:var(--display);font-weight:600;font-size:1.14rem;margin:0 0 5px;letter-spacing:-.01em}
+  ol.recs p{margin:0;font-size:15.5px;color:var(--ink-soft)}
+
+  /* ---------- limits ---------- */
+  .limits{background:var(--ink);color:var(--paper);margin-top:0}
+  .limits h2{color:var(--paper)}
+  .limits .eyebrow{color:#8E9AC4}
+  .limits .body-col{color:#C6CDE4}
+  .limitgrid{display:grid;gap:2px;background:#2A3568;border:1px solid #2A3568;margin-top:34px}
+  @media(min-width:760px){.limitgrid{grid-template-columns:repeat(2,1fr)}}
+  .limit{background:var(--ink);padding:24px}
+  .limit h3{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#8E9AC4;margin:0 0 10px;font-weight:500}
+  .limit p{margin:0;font-size:15px;color:#C6CDE4;line-height:1.55}
+
+  /* ---------- method + footer ---------- */
+  .method{display:grid;gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:34px}
+  @media(min-width:700px){.method{grid-template-columns:repeat(2,1fr)}}
+  .mcell{background:var(--paper-2);padding:22px 24px}
+  .mcell .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:0 0 8px}
+  .mcell p{margin:0;font-size:15px}
+  .mcell code{font-family:var(--mono);font-size:13.5px;background:#E4E8F1;padding:1px 5px}
+
+  footer{border-top:1px solid var(--rule);padding:60px 0 80px}
+  .flinks{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0 30px}
+  .flinks a{
+    font-family:var(--mono);font-size:13px;text-decoration:none;
+    border:1px solid var(--ink);padding:11px 18px;transition:background .18s,color .18s
+  }
+  .flinks a:hover{background:var(--ink);color:var(--paper-2)}
+  .colophon{font-size:13.5px;color:var(--muted);margin:0;max-width:60ch}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+    .dots i{transform:none;opacity:1}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="who"><b>Estefania Barrosa</b> — Data Analytics</div>
+    <nav class="navlinks">
+      <a href="#finding">Findings</a>
+      <a href="#method">Method</a>
+      <a href="#links">Repository</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="wrap hero">
+  <p class="eyebrow">Olist marketplace · 99,441 orders · 2016–2018</p>
+  <h1>Olist doesn't have an acquisition problem. It has a <em>delivery problem</em> wearing an acquisition costume.</h1>
+  <p class="lede">I started this analysis expecting seller acquisition — or price — to explain customer satisfaction. Neither did. What explained it was whether the package arrived when the customer was promised it would.</p>
+
+  <div class="matrix" id="matrix">
+    <div>
+      <p class="panel-label">1-star reviews</p>
+      <p class="panel-num hot">37.8%</p>
+      <p class="panel-cap">involve a delivery that arrived after the promised date</p>
+      <div class="dots" data-on="38" aria-hidden="true"></div>
+    </div>
+    <div>
+      <p class="panel-label">5-star reviews</p>
+      <p class="panel-num">3.0%</p>
+      <p class="panel-cap">involve a delivery that arrived after the promised date</p>
+      <div class="dots" data-on="3" aria-hidden="true"></div>
+    </div>
+    <p class="verdict">Each square is one review in a hundred. The difference between a furious customer and a happy one is <b>twelve times more likely</b> to be a late van than a bad product.</p>
+  </div>
+</div>
+
+<section class="rule-top" id="question">
+  <div class="wrap">
+    <p class="eyebrow">The question</p>
+    <h2>Three levers. Limited budget. Which one actually moves?</h2>
+    <div class="body-col">
+      <p>Olist is a Brazilian marketplace that lets small businesses sell online without building their own e-commerce infrastructure. Around 3,000 sellers, customers across the country, and growth that depends on three things working together.</p>
+      <p>The tempting answer is to fund all three. The useful answer is to know which one the evidence actually supports. So I tested each against the outcome it is supposed to move.</p>
+    </div>
+
+    <div class="levers">
+      <div class="lever">
+        <h3>Lever 01 — Acquisition</h3>
+        <p>Does the channel a seller came through predict how much that seller goes on to sell?</p>
+        <span class="tested no">No significant effect</span>
+      </div>
+      <div class="lever">
+        <h3>Lever 02 — Delivery</h3>
+        <p>How reliable is delivery, and does reliability vary across Brazilian states?</p>
+        <span class="tested yes">Varies 4× by state</span>
+      </div>
+      <div class="lever">
+        <h3>Lever 03 — Satisfaction</h3>
+        <p>What drives review scores: delivery timing, product category, or price?</p>
+        <span class="tested yes">Delivery dominates</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rule-top" id="finding">
+  <div class="wrap">
+    <p class="eyebrow">Finding 01 — Delivery and satisfaction</p>
+    <h2>On time: 4.29 stars. Late: 2.57.</h2>
+    <div class="body-col">
+      <p>That gap of 1.7 stars is the single widest split anywhere in the dataset — wider than any product category, and far wider than anything price explains. A Welch's t-test across 88,163 on-time and 7,661 late orders returns t&nbsp;=&nbsp;89.4, p&nbsp;&lt;&nbsp;0.001.</p>
+      <p>Product category and price also test as significant. At almost 100,000 orders, most things do. What separates delivery is the size of the difference, not the p-value: the median order value barely shifts between a one-star and a five-star review, while delivery moves the average rating by nearly two full stars.</p>
+    </div>
+  </div>
+</section>
+
+<section class="rule-top" id="region">
+  <div class="wrap">
+    <p class="eyebrow">Finding 02 — Where the problem lives</p>
+    <h2>The worst rate is not where you start.</h2>
+    <div class="body-col">
+      <p>Late-delivery rates range from 5.6% in Minas Gerais to 23.9% in Alagoas, against a national average of 8.1%. A single national delivery policy hides all of that.</p>
+      <p>But ranking states by rate points you at Alagoas — a small state where a fix reaches few customers. Rank them instead by share of every late delivery in the marketplace, and a different state comes first. Switch the view:</p>
+    </div>
+
+    <div class="toggle" role="group" aria-label="Sort states by">
+      <button id="btn-rate" aria-pressed="false">Sort by late-delivery rate</button>
+      <button id="btn-share" aria-pressed="true">Sort by share of all late deliveries</button>
+    </div>
+
+    <div class="chart" id="chart"></div>
+    <p class="chart-note" id="chartNote"></p>
+  </div>
+</section>
+
+<section class="rule-top" id="null">
+  <div class="wrap">
+    <p class="eyebrow">Finding 03 — The result that changed my mind</p>
+    <h2>Acquisition channel told us nothing.</h2>
+    <div class="body-col">
+      <p>Descriptively, organic search looked stronger than paid search — R$1,832 average seller GMV against R$1,537. That is the kind of gap a marketing team would happily build a budget around.</p>
+      <p>It doesn't survive testing. Across the four main channels the difference sits inside normal variation, and it stays there when the test is repeated without assuming a normal distribution.</p>
+    </div>
+
+    <div class="nullbox">
+      <div class="nullstats">
+        <div class="nullstat"><div class="k">One-way ANOVA</div><div class="v">p = 0.59</div></div>
+        <div class="nullstat"><div class="k">Kruskal-Wallis</div><div class="v">p = 0.38</div></div>
+        <div class="nullstat"><div class="k">Sellers compared</div><div class="v">276</div></div>
+      </div>
+      <p>Shapiro-Wilk rejected normality for all four channels, so the ANOVA was repeated non-parametrically. Both tests agree, which means the conclusion doesn't depend on which one you trust. A null result is still a result: it tells the business where <em>not</em> to spend on the strength of an assumption.</p>
+    </div>
+  </div>
+</section>
+
+<section class="rule-top" id="recs">
+  <div class="wrap">
+    <p class="eyebrow">From analysis to action</p>
+    <h2>What I'd put in front of the CEO.</h2>
+    <ol class="recs">
+      <li>
+        <div>
+          <h3>Fix delivery reliability in Rio de Janeiro first</h3>
+          <p>One state, a fifth of every late delivery in the marketplace. It is the only place where a bad rate and real volume overlap at scale.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Manage logistics regionally, not as a national average</h3>
+          <p>An 8.1% national figure conceals a four-fold spread. Track the late rate by state weekly so problems surface before they reach reviews.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Stop treating acquisition channel as a quality signal</h3>
+          <p>It doesn't predict seller value in this data. Post-onboarding performance does, and it's already being measured.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Watch the promise, not just the delivery</h3>
+          <p>On-time rate can be "improved" by quoting later dates. Any target on delivery reliability needs the estimated dates monitored alongside it, or the metric moves without the customer noticing anything.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="limits">
+  <div class="wrap">
+    <p class="eyebrow">Honest scope</p>
+    <h2>What this analysis does not prove.</h2>
+    <div class="body-col">
+      <p>Every number above has a boundary. These are the four that would change how much weight I'd put on the conclusions.</p>
+    </div>
+    <div class="limitgrid">
+      <div class="limit">
+        <h3>Survivorship</h3>
+        <p>Of 842 acquired sellers, only 380 appear selling in the marketplace data. The acquisition comparison is conditioned on having made at least one sale, so a channel that loses sellers before their first order would be invisible here.</p>
+      </div>
+      <div class="limit">
+        <h3>Association, not cause</h3>
+        <p>Delivery dates come from the order table rather than from the review, so lateness isn't self-reported by unhappy customers. But late deliveries may still travel with other problems this data can't separate.</p>
+      </div>
+      <div class="limit">
+        <h3>Attribution</h3>
+        <p>Order-level data cannot tell whether a delay originated with the seller, the carrier, or Olist. That matters, because the three imply completely different interventions.</p>
+      </div>
+      <div class="limit">
+        <h3>Recency</h3>
+        <p>The data covers 2016–2018. The mechanism — that missing a promised date drives one-star reviews — is structural. The specific state rates would need refreshing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rule-top" id="method">
+  <div class="wrap">
+    <p class="eyebrow">How it was built</p>
+    <h2>Python to SQL to Tableau, cross-checked at each handoff.</h2>
+    <div class="body-col">
+      <p>Two public Olist datasets joined on <code>seller_id</code>: the e-commerce data and the seller acquisition funnel. Core business metrics were reproduced in SQL and compared against the pandas results, because a join that silently duplicates rows is the failure mode that survives every visual check.</p>
+    </div>
+    <div class="method">
+      <div class="mcell">
+        <div class="k">Clean &amp; validate</div>
+        <p>Python, pandas, numpy. Nulls, duplicates, type casting, and relational integrity across nine tables.</p>
+      </div>
+      <div class="mcell">
+        <div class="k">Test</div>
+        <p>scipy. Shapiro-Wilk, one-way ANOVA, Kruskal-Wallis, Welch's t-test. H₀/H₁ and α stated for each.</p>
+      </div>
+      <div class="mcell">
+        <div class="k">Reproduce in SQL</div>
+        <p>MySQL via SQLAlchemy. CTEs and window functions — <code>RANK() OVER</code>, <code>SUM() OVER</code> — for the state prioritisation.</p>
+      </div>
+      <div class="mcell">
+        <div class="k">Communicate</div>
+        <p>A seven-sheet Tableau dashboard with cross-filtering, and a twelve-slide deck for a CEO audience.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="links">
+  <div class="wrap">
+    <p class="eyebrow">The work</p>
+    <h2>Everything is in the repository.</h2>
+    <div class="flinks">
+      <a href="https://github.com/estefaniabarrosa/olist-end-to-end-data-analytics">Repository</a>
+      <a href="https://github.com/estefaniabarrosa/olist-end-to-end-data-analytics/tree/main/notebooks">Notebooks</a>
+      <a href="https://github.com/estefaniabarrosa/olist-end-to-end-data-analytics/blob/main/sql/olist_business_analysis.sql">SQL queries</a>
+      <a href="https://github.com/estefaniabarrosa/olist-end-to-end-data-analytics/tree/main/dashboards">Tableau dashboard</a>
+      <a href="https://www.linkedin.com/in/estefaniabr/">LinkedIn</a>
+    </div>
+    <p class="colophon">Final project for the Ironhack Data Analytics programme, August 2026. Built with Python, MySQL and Tableau. Data: the Brazilian E-Commerce and Marketing Funnel datasets published by Olist — real, anonymised operational data.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ---- dot matrices ---- */
+  document.querySelectorAll('.dots').forEach(function(box){
+    var on = parseInt(box.dataset.on,10), i;
+    for(i=0;i<100;i++){
+      var d=document.createElement('i');
+      if(i<on) d.className='on';
+      d.style.animationDelay=(i*7)+'ms';
+      box.appendChild(d);
+    }
+  });
+  var matrix=document.getElementById('matrix');
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries,obs){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('lit'); obs.unobserve(e.target); }
+      });
+    },{threshold:.25}).observe(matrix);
+  } else { matrix.classList.add('lit'); }
+
+  /* ---- state chart ---- */
+  var DATA=[
+    {s:"SP",o:40494,r:5.9,sh:30.5},{s:"RJ",o:12350,r:13.5,sh:21.3},
+    {s:"MG",o:11354,r:5.6,sh:8.1},{s:"BA",o:3256,r:14.0,sh:5.8},
+    {s:"RS",o:5344,r:7.1,sh:4.9},{s:"SC",o:3546,r:9.8,sh:4.4},
+    {s:"PR",o:4923,r:5.0,sh:3.1},{s:"ES",o:1995,r:12.2,sh:3.1},
+    {s:"CE",o:1279,r:15.3,sh:2.5},{s:"PE",o:1593,r:10.8,sh:2.2},
+    {s:"AL",o:397,r:23.9,sh:1.2},{s:"MA",o:717,r:19.7,sh:1.8}
+  ];
+  var chart=document.getElementById('chart'),
+      note=document.getElementById('chartNote'),
+      bRate=document.getElementById('btn-rate'),
+      bShare=document.getElementById('btn-share');
+
+  var NOTES={
+    rate:"Sorted by rate, Alagoas leads — 23.9% of its deliveries arrive late. But Alagoas is 397 orders. Fixing it perfectly would repair about 1% of the marketplace's late deliveries.",
+    share:"Sorted by share of the problem, Rio de Janeiro is the answer: a 13.5% late rate — more than double the national 8.1% — carried on the second-largest order volume in the country. São Paulo appears high on volume alone; its rate is already below average."
+  };
+
+  function render(mode){
+    var rows=DATA.slice().sort(function(a,b){
+      return mode==='rate' ? b.r-a.r : b.sh-a.sh;
+    });
+    var max=mode==='rate'?rows[0].r:rows[0].sh;
+    chart.innerHTML='';
+    rows.forEach(function(d,idx){
+      var v=mode==='rate'?d.r:d.sh;
+      var row=document.createElement('div');
+      row.className='row'+(idx<2?' hot':'');
+      row.innerHTML='<span class="st">'+d.s+'</span>'+
+        '<span class="track"><span class="bar"></span></span>'+
+        '<span class="val">'+v.toFixed(1)+'%</span>';
+      chart.appendChild(row);
+      var bar=row.querySelector('.bar');
+      requestAnimationFrame(function(){
+        setTimeout(function(){ bar.style.width=(v/max*100)+'%'; }, idx*35);
+      });
+    });
+    note.textContent=NOTES[mode];
+    bRate.setAttribute('aria-pressed', mode==='rate');
+    bShare.setAttribute('aria-pressed', mode==='share');
+  }
+  bRate.addEventListener('click',function(){render('rate');});
+  bShare.addEventListener('click',function(){render('share');});
+  render('share');
+})();
+</script>
+</body>
+</html>
