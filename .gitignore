@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Tableau temp / recovery files
+~*.twbr
+*.twbr
+Tableau Preferences.tps
+
+# Office temp files
+~$*.pptx
+~$*.xlsx
+~$*.docx

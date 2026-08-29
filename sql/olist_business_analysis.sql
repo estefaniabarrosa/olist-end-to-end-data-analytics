@@ -95,8 +95,51 @@ WHERE
     o.order_status = 'delivered'
         AND o.order_delivered_customer_date IS NOT NULL
 GROUP BY c.customer_state
-ORDER BY late_delivery_rate DESC;
+ORDER BY late_delivery_rate DESC; 
 
+-- ============================================================
+-- Q2.2 | PRIORITISATION: WHERE HIGH LATE RATE MEETS HIGH VOLUME
+-- ============================================================
+-- Research question:
+-- Which states should Olist fix first?
+--
+-- A high late delivery rate is not enough on its own. A small
+-- state with a bad rate affects few customers. This query ranks
+-- states by rate and by volume, and measures what share of all
+-- late deliveries in the country each state is responsible for.
+--
+-- Window functions are used to rank states and to compare each
+-- state against the national total inside a single query.
+-- ============================================================
+
+WITH state_delivery AS (
+    SELECT
+        c.customer_state,
+        COUNT(DISTINCT o.order_id) AS delivered_orders,
+        SUM(CASE
+                WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date
+                THEN 1 ELSE 0
+            END) AS late_orders
+    FROM
+        orders AS o
+            INNER JOIN
+        customers AS c ON o.customer_id = c.customer_id
+    WHERE
+        o.order_status = 'delivered'
+            AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY c.customer_state
+)
+SELECT
+    customer_state,
+    delivered_orders,
+    ROUND(100.0 * late_orders / delivered_orders, 2) AS late_delivery_rate,
+    RANK() OVER (ORDER BY 1.0 * late_orders / delivered_orders DESC) AS late_rate_rank,
+    RANK() OVER (ORDER BY delivered_orders DESC) AS volume_rank,
+    ROUND(100.0 * delivered_orders / SUM(delivered_orders) OVER (), 2) AS pct_of_national_orders,
+    ROUND(100.0 * late_orders / SUM(late_orders) OVER (), 2) AS pct_of_all_late_orders
+FROM
+    state_delivery
+ORDER BY pct_of_all_late_orders DESC;
 
 
 -- ============================================================
